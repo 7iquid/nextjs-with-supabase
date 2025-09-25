@@ -1,50 +1,95 @@
-import { DeployButton } from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import { AuthButton } from "@/components/auth-button";
-import { Hero } from "@/components/hero";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
-import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/lib/utils";
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
-export default function Home() {
-  return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-            <div className="flex gap-5 items-center font-semibold">
-              <Link href={"/"}>Next.js Supabase Starter</Link>
-              <div className="flex items-center gap-2">
-                <DeployButton />
-              </div>
-            </div>
-            {!hasEnvVars ? <EnvVarWarning /> : <AuthButton />}
-          </div>
-        </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
-          <Hero />
-          <main className="flex-1 flex flex-col gap-6 px-4">
-            <h2 className="font-medium text-xl mb-4">Next steps</h2>
-            {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-          </main>
-        </div>
+interface Profile {
+  id: string;
+  username: string;
+  location: string;
+  bio: string;
+  interests: string[];
+  avatarUrl?: string;
+}
 
-        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
-          </p>
-          <ThemeSwitcher />
-        </footer>
+export default function Home() {
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      try {
+        const res = await fetch("/api/profiles"); // rewrites will map this
+        if (!res.ok) throw new Error("Failed to fetch profiles");
+        const data = await res.json();
+        setProfiles(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfiles();
+  }, []);
+
+  if (loading) {
+    return <p className="text-center mt-10">Loading profiles...</p>;
+  }
+
+  if (error) {
+    return <p className="text-center text-red-500 mt-10">{error}</p>;
+  }
+
+  return (
+    <main className="min-h-screen flex flex-col items-center p-6">
+      <h1 className="text-2xl font-bold text-orange-600 mb-6">
+        Traveler Profiles
+      </h1>
+
+      <div className="w-full max-w-4xl overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-4 py-2 text-left">Avatar</th>
+              <th className="px-4 py-2 text-left">Username</th>
+              <th className="px-4 py-2 text-left">Location</th>
+              <th className="px-4 py-2 text-left">Bio</th>
+              <th className="px-4 py-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {profiles?.data.map((profile) => (
+              <tr key={profile.id} className="border-t">
+                <td className="px-4 py-2">
+                  {profile.avatarUrl ? (
+                    <img
+                      src={profile.avatarUrl}
+                      alt="avatar"
+                      className="w-10 h-10 rounded-full"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xs text-gray-600">
+                      N/A
+                    </div>
+                  )}
+                </td>
+                <td className="px-4 py-2 font-medium">{profile.username}</td>
+                <td className="px-4 py-2">{profile.location}</td>
+                <td className="px-4 py-2 max-w-xs truncate">{profile.bio}</td>
+                <td className="px-4 py-2">
+                  <Link
+                    href={`/profile/${profile.id}`}
+                    className="text-orange-600 hover:underline"
+                  >
+                    View
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </main>
   );
