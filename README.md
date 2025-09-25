@@ -1,105 +1,72 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# 🧭 Travejor Frontend (Next.js)
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+A minimal traveler profile web app built with **Next.js 15**, **React 19**, and **TailwindCSS**.
+This frontend consumes the NestJS REST API to display and manage traveler profiles.
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+---
 
-## Features
+## 🚀 Tech Stack
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+- **Next.js 15** – App Router, API routes, fast dev server
+- **React 19** – Component-based UI
+- **TailwindCSS** – Utility-first responsive styling
+- **Radix UI** + **Lucide Icons** – Accessible UI primitives and icons
+- **Supabase (optional)** – For auth & SSR helpers
+- **TypeScript** – Strong typing and developer experience
 
-## Demo
+**Reasoning:** Next.js + Tailwind enables fast development, SSR/ISR, responsive design, and seamless backend integration.
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+---
 
-## Deploy to Vercel
+## ⚙️ Environment Variables
 
-Vercel deployment will guide you through creating a Supabase account and project.
+Copy `.env.example` to `.env.local` and configure:
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:3000/v1    # Local NestJS API
+# or for production
+# NEXT_PUBLIC_API_URL=https://nestexpress.onrender.com/api/v1
+```
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+---
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+## 🛠 Setup & Installation
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+1. **Clone the repo**
 
-## Clone and run locally
+```bash
+git clone https://github.com/7iquid/NestExpress.git travejor-frontend
+cd travejor-frontend
+```
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+2. **Install dependencies**
 
-2. Create a Next.js app using the Supabase Starter template npx command
+```bash
+yarn install
+```
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+3. **Run frontend dev server**
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+```bash
+yarn dev
+```
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+Open [http://localhost:3001](http://localhost:3001)
 
-3. Use `cd` to change into the app's directory
+---
 
-   ```bash
-   cd with-supabase-app
-   ```
+## 📱 Features
 
-4. Rename `.env.example` to `.env.local` and update the following:
+- Traveler profiles grid (avatar, username, bio, location, interests)
+- Responsive card layout (mobile → desktop)
+- Edit profile form (bio + interests)
+- Dark theme with primary color `#FF6A00`
+- Loading & error states
 
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
+---
 
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
+## 🧪 Development Notes
 
-5. You can now run the Next.js local development server:
-
-   ```bash
-   npm run dev
-   ```
-
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
-
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
-
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
-
-## Feedback and issues
-
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
-
-## More Supabase examples
-
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+- Minimal UI for fast development
+- TailwindCSS can be customized via `tailwind.config.js`
+- API rewrites in `next.config.ts` proxy `/api/*` → NestJS API
