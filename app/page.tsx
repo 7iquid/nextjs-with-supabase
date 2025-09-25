@@ -20,10 +20,11 @@ export default function Home() {
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        const res = await fetch("/api/profiles"); // rewrites will map this
+        const res = await fetch("/api/profiles");
         if (!res.ok) throw new Error("Failed to fetch profiles");
         const data = await res.json();
-        setProfiles(data);
+
+        setProfiles(Array.isArray(data) ? data : data.data || []);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -35,61 +36,70 @@ export default function Home() {
   }, []);
 
   if (loading) {
-    return <p className="text-center mt-10">Loading profiles...</p>;
+    return (
+      <p className="text-center mt-10 text-gray-300">Loading profiles...</p>
+    );
   }
 
   if (error) {
-    return <p className="text-center text-red-500 mt-10">{error}</p>;
+    return <p className="text-center text-red-400 mt-10">{error}</p>;
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center p-6">
-      <h1 className="text-2xl font-bold text-orange-600 mb-6">
+    <main className="min-h-screen w-full bg-black text-gray-200 px-4 py-8">
+      <h1 className="text-3xl font-bold text-center mb-10 text-[#FF6A00]">
         Traveler Profiles
       </h1>
 
-      <div className="w-full max-w-4xl overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-2 text-left">Avatar</th>
-              <th className="px-4 py-2 text-left">Username</th>
-              <th className="px-4 py-2 text-left">Location</th>
-              <th className="px-4 py-2 text-left">Bio</th>
-              <th className="px-4 py-2 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {profiles?.data.map((profile) => (
-              <tr key={profile.id} className="border-t">
-                <td className="px-4 py-2">
-                  {profile.avatarUrl ? (
-                    <img
-                      src={profile.avatarUrl}
-                      alt="avatar"
-                      className="w-10 h-10 rounded-full"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xs text-gray-600">
-                      N/A
-                    </div>
-                  )}
-                </td>
-                <td className="px-4 py-2 font-medium">{profile.username}</td>
-                <td className="px-4 py-2">{profile.location}</td>
-                <td className="px-4 py-2 max-w-xs truncate">{profile.bio}</td>
-                <td className="px-4 py-2">
-                  <Link
-                    href={`/profile/${profile.id}`}
-                    className="text-orange-600 hover:underline"
-                  >
-                    View
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        {profiles.map((profile, index) => (
+          <div
+            key={`profile-${profile.id}-${index}`} // unique profile card key
+            className="bg-gray-900 rounded-xl shadow-lg border border-gray-800 p-6 flex flex-col hover:shadow-xl hover:border-[#FF6A00] transition"
+          >
+            <div className="flex items-center mb-4">
+              {profile.avatarUrl ? (
+                <img
+                  src={profile.avatarUrl}
+                  alt={profile.username}
+                  className="w-14 h-14 rounded-full border-2 border-[#FF6A00] object-cover"
+                />
+              ) : (
+                <div className="w-14 h-14 rounded-full bg-gray-700 flex items-center justify-center text-xs text-gray-400 border border-[#FF6A00]">
+                  N/A
+                </div>
+              )}
+              <div className="ml-4">
+                <h2 className="text-lg font-semibold text-white">
+                  {profile.username}
+                </h2>
+                <p className="text-sm text-gray-400">{profile.location}</p>
+              </div>
+            </div>
+
+            <p className="text-gray-300 mb-4 line-clamp-3">{profile.bio}</p>
+
+            <div className="flex flex-wrap gap-2 mb-4">
+              {profile.interests.map((interest, idx) => (
+                <span
+                  key={`profile-${profile.id}-interest-${idx}`}
+                  className="px-2 py-1 text-xs rounded-full bg-[#FF6A00]/20 text-[#FF6A00] border border-[#FF6A00]/30"
+                >
+                  {interest}
+                </span>
+              ))}
+            </div>
+
+            <div className="mt-auto">
+              <Link
+                href={`/profile/${profile.id}`}
+                className="inline-block w-full text-center px-4 py-2 rounded-lg bg-[#FF6A00] text-black font-medium hover:bg-[#e65c00] transition"
+              >
+                View Profile
+              </Link>
+            </div>
+          </div>
+        ))}
       </div>
     </main>
   );
