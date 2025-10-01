@@ -3,6 +3,7 @@
 import { useFetchClientV1 } from "@/hooks/useFetchClientV1";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function ProfilePage() {
   const { id } = useParams() as { id: string };
@@ -10,6 +11,7 @@ export default function ProfilePage() {
     data: profile,
     loading,
     error,
+    setData,
   } = useFetchClientV1("/v1/profiles/{id}", { params: { id } });
 
   const router = useRouter();
@@ -29,7 +31,7 @@ export default function ProfilePage() {
   const handleSave = async () => {
     if (!profile) return;
     try {
-      const res = await fetch(`/api/profiles/${id}`, {
+      const res = await fetch(`/api/v1/profiles/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -39,6 +41,7 @@ export default function ProfilePage() {
       });
       if (!res.ok) throw new Error("Failed to update profile");
       const json = await res.json();
+      setData(json.data);
       alert("Profile updated successfully!");
     } catch (err: any) {
       alert(err.message);
@@ -68,11 +71,16 @@ export default function ProfilePage() {
       <div className="max-w-2xl mx-auto bg-gray-900 border border-gray-800 rounded-xl shadow-lg p-6">
         <div className="flex flex-col items-center mb-6">
           {profile.avatarUrl ? (
-            <img
-              src={profile.avatarUrl}
-              alt="avatar"
-              className="w-24 h-24 rounded-full border-2 border-[#FF6A00] object-cover"
-            />
+            <div className="relative w-24 h-24 rounded-full border-2 border-[#FF6A00] overflow-hidden">
+              <Image
+                src={profile.avatarUrl}
+                width={96}
+                height={96}
+                alt="Avatar"
+                className="rounded-full"
+                unoptimized
+              />
+            </div>
           ) : (
             <div className="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center text-sm text-gray-400 border border-[#FF6A00]">
               No Avatar
