@@ -1,60 +1,37 @@
 "use client";
 
+import { useFetchClientV1 } from "@/hooks/useFetchClientV1";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-interface Profile {
-  id: string;
-  username: string;
-  email: string;
-  bio: string;
-  interests: string[];
-  location: string;
-  avatarUrl?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import Image from "next/image";
 
 export default function ProfilePage() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams() as { id: string };
+  const {
+    data: profile,
+    loading,
+    error,
+    setData,
+  } = useFetchClientV1("/v1/profiles/{id}", { params: { id } });
+
   const router = useRouter();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // form states
   const [bio, setBio] = useState("");
   const [interests, setInterests] = useState("");
 
+  // Initialize form values when profile loads
   useEffect(() => {
-    if (!id) return;
-
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`/api/profiles/${id}`);
-        if (!res.ok) throw new Error("Failed to fetch profile");
-        const json = await res.json();
-
-        const data: Profile = json.data;
-        setProfile(data);
-        setBio(data.bio || "");
-        setInterests(data.interests?.join(", ") || "");
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, [id]);
+    if (profile) {
+      setBio(profile.bio || "");
+      setInterests(profile.interests?.join(", ") || "");
+    }
+  }, [profile]);
 
   const handleSave = async () => {
     if (!profile) return;
     try {
-      setLoading(true);
-      const res = await fetch(`/api/profiles/${id}`, {
+      const res = await fetch(`/api/v1/profiles/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -64,14 +41,10 @@ export default function ProfilePage() {
       });
       if (!res.ok) throw new Error("Failed to update profile");
       const json = await res.json();
-
-      const updated: Profile = json.data;
-      setProfile(updated);
+      setData(json.data);
       alert("Profile updated successfully!");
     } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      alert(err.message);
     }
   };
 
@@ -86,8 +59,6 @@ export default function ProfilePage() {
       {/* Header */}
       <header className="mb-8 text-center relative">
         <h1 className="text-3xl font-bold text-[#FF6A00]">Travejor</h1>
-
-        {/* Back / Close button */}
         <button
           onClick={() => router.back()}
           className="absolute left-0 top-0 text-gray-400 hover:text-white px-3 py-2"
@@ -100,11 +71,16 @@ export default function ProfilePage() {
       <div className="max-w-2xl mx-auto bg-gray-900 border border-gray-800 rounded-xl shadow-lg p-6">
         <div className="flex flex-col items-center mb-6">
           {profile.avatarUrl ? (
-            <img
-              src={profile.avatarUrl}
-              alt="avatar"
-              className="w-24 h-24 rounded-full border-2 border-[#FF6A00] object-cover"
-            />
+            <div className="relative w-24 h-24 rounded-full border-2 border-[#FF6A00] overflow-hidden">
+              <Image
+                src={profile.avatarUrl}
+                width={96}
+                height={96}
+                alt="Avatar"
+                className="rounded-full"
+                unoptimized
+              />
+            </div>
           ) : (
             <div className="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center text-sm text-gray-400 border border-[#FF6A00]">
               No Avatar
