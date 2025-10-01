@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev:be": "docker compose up -d backend",
+    "dev:be": "docker compose up -d --pull always backend",
     "stop:be": "docker compose down",
     "dev": "yarn dev:be && next dev --turbopack -p 3001",
     "build": "next build",
